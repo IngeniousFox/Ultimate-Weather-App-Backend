@@ -24,7 +24,6 @@ namespace Ultimate_Weather_App.Controllers
 
         [HttpGet]
         [Route("TemperaturePrevision")]
-        //[Produces("application/json")]
         public async Task<ActionResult<IEnumerable<Weather>>> TemperaturePrevision([FromQuery] string latitude, [FromQuery] string longitude, [FromQuery] string units, [FromQuery] int hours)
         {
             var result = await wethaerAPI.GetTemperaturePrevision(latitude, longitude, units, hours);
