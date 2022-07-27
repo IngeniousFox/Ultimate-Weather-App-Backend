@@ -6,15 +6,14 @@ namespace Ultimate_Weather_App.Helpers
     public class WeatherAPI : IWeatherAPI
     {
 
-        private string APIKey;
-        private string WeatherURL;
+        private string weatherAPIKey;
+        private string weatherURL;
 
         public WeatherAPI(IConfiguration configuration)
         {
-            APIKey = configuration.GetValue<string>("WeatherAPIKey");
-            WeatherURL = configuration.GetValue<string>("WeatherEndpoint");
+            weatherAPIKey = configuration.GetValue<string>("WeatherAPIKey");
+            weatherURL = configuration.GetValue<string>("WeatherEndpoint");
         }
-
 
         public async Task<string> GetWeatherInformation(string latitude, string longitude, string units, string language)
         {
@@ -24,18 +23,19 @@ namespace Ultimate_Weather_App.Helpers
                 ["lat"] = latitude,
                 ["lon"] = longitude,
                 ["exclude"] = "minutely",
-                ["appid"] = APIKey,
+                ["appid"] = weatherAPIKey,
                 ["units"] = units,
                 ["lang"] = language,
             };
 
-            string url = QueryHelpers.AddQueryString(WeatherURL, parameters);
+            string url = QueryHelpers.AddQueryString(weatherURL, parameters);
 
             HttpResponseMessage result = await client.GetAsync(url);
             string responseBody = await result.Content.ReadAsStringAsync();
 
             return responseBody;
         }
+
         public async Task<IEnumerable<Weather>> GetTemperaturePrevision(string latitude, string longitude, string units, int hours)
         {
             List<Weather> temperature = new List<Weather>();
@@ -55,11 +55,11 @@ namespace Ultimate_Weather_App.Helpers
                     ["lat"] = latitude,
                     ["lon"] = longitude,
                     ["dt"] = desiredTimeStamp.ToString(),
-                    ["appid"] = APIKey,
+                    ["appid"] = weatherAPIKey,
                     ["units"] = units
                 };
 
-                string url = QueryHelpers.AddQueryString(WeatherURL + "/timemachine", parameters);
+                string url = QueryHelpers.AddQueryString(weatherURL + "/timemachine", parameters);
 
                 Task<HttpResponseMessage> result = client.GetAsync(url);
                 responses.Add(result);

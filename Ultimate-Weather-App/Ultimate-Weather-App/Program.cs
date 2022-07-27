@@ -5,7 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddSingleton<IWeatherAPI, WeatherAPI>();
+builder.Services.AddSingleton<IGeocodingAPI, GeocodingAPI>();
 
 var app = builder.Build();
 
