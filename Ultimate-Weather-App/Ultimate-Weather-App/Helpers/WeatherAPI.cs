@@ -11,8 +11,8 @@ namespace Ultimate_Weather_App.Helpers
 
         public WeatherAPI(IConfiguration configuration)
         {
-            APIKey = configuration.GetValue<string>("APIKey");
-            WeatherURL = configuration.GetValue<string>("Endpoint");
+            APIKey = configuration.GetValue<string>("WeatherAPIKey");
+            WeatherURL = configuration.GetValue<string>("WeatherEndpoint");
         }
 
 
@@ -39,6 +39,7 @@ namespace Ultimate_Weather_App.Helpers
         public async Task<IEnumerable<Weather>> GetTemperaturePrevision(string latitude, string longitude, string units, int hours)
         {
             List<Weather> temperature = new List<Weather>();
+            List<Task<HttpResponseMessage>> responses = new List<Task<HttpResponseMessage>>();
             DateTime currentDate = DateTime.Now;
 
             hours = (hours > 24) ? 24 : hours;
@@ -60,8 +61,14 @@ namespace Ultimate_Weather_App.Helpers
 
                 string url = QueryHelpers.AddQueryString(WeatherURL + "/timemachine", parameters);
 
-                HttpResponseMessage result = await client.GetAsync(url);
-                string responseBody = await result.Content.ReadAsStringAsync();
+                Task<HttpResponseMessage> result = client.GetAsync(url);
+                responses.Add(result);
+            }
+
+            await Task.WhenAll(responses);
+            foreach (var response in responses)
+            {
+                string responseBody = await response.Result.Content.ReadAsStringAsync();
                 temperature.Add(JsonConvert.DeserializeObject<Weather>(responseBody));
             }
 
